@@ -1,4 +1,4 @@
-#!/home/mo7amed/alx_se/myAirBnb_v2/AirBnB_clone_v2/venv/bin/python3.8
+#!/usr/bin/python3
 """
 Fabric script that generates a .tgz archive
 from the contents of the web_static folder of
