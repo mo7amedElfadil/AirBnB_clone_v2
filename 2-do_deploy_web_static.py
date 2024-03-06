@@ -16,10 +16,9 @@ def do_pack():
     local("mkdir -p versions")
     date = datetime.now().strftime("%Y%m%d%H%M%S")
     file = "versions/web_static_{}.tgz".format(date)
-    result = local("tar -cvzf {} web_static".format(file))
-    if result.failed:
-        return None
-    return file
+    if local("tar -cvzf {} web_static".format(file)).succeeded:
+        return file
+    return None
 
 
 def do_deploy(archive_path):
@@ -30,13 +29,13 @@ def do_deploy(archive_path):
     -i my_ssh_private_key -u ubuntu
     """
     try:
-        if not archive_path or not exists(archive_path):
+        if not exists(archive_path):
             return False
-        put(archive_path, "/tmp/")
         target = "/data/web_static/releases/"
+        put(archive_path, "/tmp/")
         archive_path = basename(archive_path)
         file, _ = splitext(archive_path)
-        run(f"if [ -d {target}{file} ]; then rm -rf {target}{file}; fi")
+        run(f"rm -rf {target}{file}/")
         run(f"tar -xzf /tmp/{archive_path} -C {target} \
                 && mv {target}web_static {target}{file}")
         run(f"rm /tmp/{archive_path}")
