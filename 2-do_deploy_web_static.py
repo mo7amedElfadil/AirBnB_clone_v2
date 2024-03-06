@@ -41,8 +41,8 @@ def do_deploy(archive_path):
         with cd(target):
             # run(f"rm -rf {file}/")
             run(f"mkdir -p {file}")
-            run(f"tar -xzf /tmp/{archive_path} -C {target}")
-            run(f"mv web_static {file}")
+            run(f"tar -xzf /tmp/{archive_path} -C {file}")
+            run(f"mv {file}/web_static/* {file} && rm -rf {file}/web_static")
 
         run(f"rm /tmp/{archive_path}")
         run("rm -rf /data/web_static/current")

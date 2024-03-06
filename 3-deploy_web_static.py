@@ -7,14 +7,15 @@ from fabric.api import local, env, run, put
 from datetime import datetime
 
 env.hosts = ["54.144.238.161", "100.25.154.52"]
+env.user = "ubuntu"
 
 
 def do_pack():
     """Packs the web_static files into .tgz file"""
     local("mkdir -p versions")
     date = datetime.now().strftime("%Y%m%d%H%M%S")
-    file = "versions/web_static_{}.tgz".format(date)
-    if local("tar -cvzf {} web_static".format(file)).succeeded:
+    file = f"versions/web_static_{date}.tgz"
+    if local(f"tar -cvzf {file} web_static").succeeded:
         return file
     return None
 
@@ -27,23 +28,30 @@ def do_deploy(archive_path):
     -i my_ssh_private_key -u ubuntu
     """
     try:
-        if not archive_path or not exists(archive_path):
+        if not exists(archive_path):
             return False
-        put(archive_path, "/tmp/")
+
         target = "/data/web_static/releases/"
+        put(archive_path, "/tmp/")
         archive_path = basename(archive_path)
         file, _ = splitext(archive_path)
-        run(f"if [ -d {target}{file} ]; then rm -rf {target}{file}; fi")
-        run(f"tar -xzf /tmp/{archive_path} -C {target} \
-                && mv {target}web_static {target}{file}")
+
+        with cd(target):
+            # run(f"rm -rf {file}/")
+            run(f"mkdir -p {file}")
+            run(f"tar -xzf /tmp/{archive_path} -C {file}")
+            run(f"mv {file}/web_static/* {file} && rm -rf {file}/web_static")
+
         run(f"rm /tmp/{archive_path}")
         run("rm -rf /data/web_static/current")
         run(f"ln -s {target}{file}/ /data/web_static/current")
-        # run("sudo service nginx restart")
+
         print("New version deployed!")
-        return True
+
     except Exception:
         return False
+
+    return True
 
 
 def deploy():
