@@ -29,19 +29,16 @@ def do_deploy(archive_path):
     archive_path=versions/web_static_20240306225407.tgz
     -i my_ssh_private_key -u ubuntu
     """
-    if not archive_path or not exists(archive_path):
-        return False
     try:
+        if not archive_path or not exists(archive_path):
+            return False
         put(archive_path, "/tmp/")
         target = "/data/web_static/releases/"
         archive_path = basename(archive_path)
-        file = splitext(archive_path)
-        run(f"mkdir -p {target}{file}/")
+        file, _ = splitext(archive_path)
         run(f"if [ -d {target}{file} ]; then rm -rf {target}{file}; fi")
-        run(f"if [ -d {target}web_static ]; then \
-                rm -rf {target}web_static; fi")
-        run(f"tar -xf /tmp/{archive_path} -C {target} \
-                && mv {target}web_static {target}{file}/")
+        run(f"tar -xzf /tmp/{archive_path} -C {target} \
+                && mv {target}web_static {target}{file}")
         run(f"rm /tmp/{archive_path}")
         run("rm -rf /data/web_static/current")
         run(f"ln -s {target}{file}/ /data/web_static/current")
