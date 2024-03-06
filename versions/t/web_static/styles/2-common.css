@@ -1,0 +1,10 @@
+/*------------ GLOBAL STYLE -----------------*/
+html, body {
+	height: 100%;
+}
+body {
+	display: grid;
+	grid-template-rows: 1fr;
+	margin: 0;
+	padding: 0;
+}

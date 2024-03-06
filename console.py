@@ -216,12 +216,12 @@ class HBNBCommand(cmd.Cmd):
             if line in key:
                 storage.delete(obj_dict[key])
         storage.save()
-    def do_drop_all(self):
-       """Drops all instances of all classes"""
-       if db:
-           storage.drop_all()
-           storage.save()
 
+    def do_drop_all(self):
+        """Drops all instances of all classes"""
+        if db:
+            storage.drop_all()
+            storage.save()
 
 
 if __name__ == '__main__':
