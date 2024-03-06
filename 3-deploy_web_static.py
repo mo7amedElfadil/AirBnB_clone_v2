@@ -2,7 +2,7 @@
 """Fabric script that creates and distributes
 an archive to my web servers,
 using the function deploy"""
-from os.path import exists
+from os.path import basename, exists, splitext
 from fabric.api import local, env, run, put
 from datetime import datetime
 
@@ -32,9 +32,8 @@ def do_deploy(archive_path):
     try:
         put(archive_path, "/tmp/")
         target = "/data/web_static/releases/"
-        archive_path = archive_path.split("/")[1]
-        file = archive_path.split(".")[0]
-        print(file)
+        archive_path = basename(archive_path)
+        file = splitext(archive_path)
         run(f"mkdir -p {target}{file}/")
         run(f"if [ -d {target}{file} ]; then rm -rf {target}{file}; fi")
         run(f"if [ -d {target}web_static ]; then \
