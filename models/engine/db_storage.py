@@ -102,6 +102,11 @@ class DBStorage:
         if cls:
             self.__session.query(cls).delete()
 
+    def drop_all(self):
+        """drop all tables
+        """
+        Base.metadata.drop_all(self.__engine)
+
     def rollback(self):
         """rollback all changes
         """
