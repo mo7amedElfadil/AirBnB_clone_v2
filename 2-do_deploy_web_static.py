@@ -5,18 +5,19 @@ from the contents of the web_static folder of
 AirBnB Clone repo
 """
 from os.path import basename, exists, splitext
-from fabric.api import local, env, run, put
+from fabric.api import local, env, run, put, cd
 from datetime import datetime
 
 env.hosts = ["54.144.238.161", "100.25.154.52"]
+env.user = "ubuntu"
 
 
 def do_pack():
     """Packs the web_static files into .tgz file"""
     local("mkdir -p versions")
     date = datetime.now().strftime("%Y%m%d%H%M%S")
-    file = "versions/web_static_{}.tgz".format(date)
-    if local("tar -cvzf {} web_static".format(file)).succeeded:
+    file = f"versions/web_static_{date}.tgz"
+    if local(f"tar -cvzf {file} web_static").succeeded:
         return file
     return None
 
@@ -31,18 +32,25 @@ def do_deploy(archive_path):
     try:
         if not exists(archive_path):
             return False
+
         target = "/data/web_static/releases/"
         put(archive_path, "/tmp/")
         archive_path = basename(archive_path)
         file, _ = splitext(archive_path)
-        run(f"rm -rf {target}{file}/")
-        run(f"tar -xzf /tmp/{archive_path} -C {target} \
-                && mv {target}web_static {target}{file}")
+
+        with cd(target):
+            # run(f"rm -rf {file}/")
+            run(f"mkdir -p {file}")
+            run(f"tar -xzf /tmp/{archive_path} -C {target}")
+            run(f"mv web_static {file}")
+
         run(f"rm /tmp/{archive_path}")
         run("rm -rf /data/web_static/current")
         run(f"ln -s {target}{file}/ /data/web_static/current")
-        # run("sudo service nginx restart")
+
         print("New version deployed!")
-        return True
+
     except Exception:
         return False
+
+    return True
