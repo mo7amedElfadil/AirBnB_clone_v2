@@ -3,13 +3,14 @@
 an archive to my web servers,
 using the function deploy"""
 from os.path import basename, exists, splitext
-from fabric.api import local, env, run, put
+from fabric.api import local, env, run, put, runs_once, cd
 from datetime import datetime
 
 env.hosts = ["54.144.238.161", "100.25.154.52"]
 env.user = "ubuntu"
 
 
+@runs_once
 def do_pack():
     """Packs the web_static files into .tgz file"""
     local("mkdir -p versions")
@@ -37,7 +38,6 @@ def do_deploy(archive_path):
         file, _ = splitext(archive_path)
 
         with cd(target):
-            # run(f"rm -rf {file}/")
             run(f"mkdir -p {file}")
             run(f"tar -xzf /tmp/{archive_path} -C {file}")
             run(f"mv {file}/web_static/* {file} && rm -rf {file}/web_static")
