@@ -44,7 +44,7 @@ def do_deploy(archive_path):
 
         run(f"rm /tmp/{archive_path}")
         run("rm -rf /data/web_static/current")
-        run(f"ln -s {target}{file}/ /data/web_static/current")
+        run(f"ln -s {target}{file} /data/web_static/current")
 
         print("New version deployed!")
 
