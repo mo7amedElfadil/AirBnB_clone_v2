@@ -1,21 +1,15 @@
 # This is a manifest file for the web_static deployment
 # It will install nginx, create the necessary directories and files, and configure the server to serve the content
 
-# update the package list
-exec { 'update':
-  command     => '/usr/bin/apt-get update',
-  refreshonly => true,
-}
-
 # install and configure nginx server
 package { 'nginx':
-  ensure  => 'installed',
-  require => Exec['update'],
+  ensure   => 'installed',
+  provider => 'apt',
 }
 # create the necessary directories
 $dirs = ['/data', '/data/web_static', '/data/web_static/releases', '/data/web_static/shared', '/data/web_static/releases/test']
 
-file { $dirs:
+-> file { $dirs:
   ensure => 'directory',
   owner  => 'ubuntu',
   group  => 'ubuntu',
@@ -23,7 +17,7 @@ file { $dirs:
 }
 
 # create the necessary files
-file { '/data/web_static/releases/test/index.html':
+-> file { '/data/web_static/releases/test/index.html':
   ensure  => 'file',
   content =>  "
 <!DOCTYPE html>
@@ -35,21 +29,18 @@ file { '/data/web_static/releases/test/index.html':
   </body>
 </html>	
 ",
-  owner   => 'ubuntu',
-  group   => 'ubuntu',
-  mode    => '0755',
 }
-exec { 'rm_current':
+-> exec { 'rm_current':
   command => '/usr/bin/rm -rf /data/web_static/current',
 }
 
-file { '/data/web_static/current':
+-> file { '/data/web_static/current':
   ensure  => 'link',
   target  => '/data/web_static/releases/test',
   require => [File['/data/web_static/releases/test/index.html'], Exec['rm_current']],
 }
 
-file { '/etc/nginx/sites-available/default':
+-> file { '/etc/nginx/sites-available/default':
     ensure  => file,
     content => "server {
 	add_header X-Served-By ${hostname};
@@ -72,15 +63,12 @@ file { '/etc/nginx/sites-available/default':
 	location = /404.html {
 		internal;
 	}
-
 }",
     require => [Package['nginx'], Exec['update']],
 }
 
 # restart the server
-exec {'run':
-    command     => 'service nginx restart',
-    path        => 'bin:/usr/bin:/usr/sbin',
-    refreshonly => true,
-    subscribe   => File['/etc/nginx/sites-available/default'],
-  }
+-> exec {'restart_nginx':
+    command   => '/usr/sbin/service nginx restart',
+    subscribe => File['/etc/nginx/sites-available/default'],
+}
