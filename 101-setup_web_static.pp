@@ -6,12 +6,12 @@ exec {'update':
   command => '/usr/bin/apt-get update',
 }
 # install and configure nginx server
--> package { 'nginx':
+package { 'nginx':
   ensure   => 'installed',
 }
 
 # create the necessary directories
--> file { $dir_names:
+file { $dir_names:
   ensure => 'directory',
   owner  => 'ubuntu',
   group  => 'ubuntu',
@@ -19,7 +19,7 @@ exec {'update':
 }
 
 # create the necessary files
--> file { '/data/web_static/releases/test/index.html':
+file { '/data/web_static/releases/test/index.html':
   ensure  => 'file',
   content =>  "
 <!DOCTYPE html>
@@ -32,17 +32,17 @@ exec {'update':
 </html>	
 ",
 }
--> exec { 'rm_current':
+exec { 'rm_current':
   command => '/usr/bin/rm -rf /data/web_static/current',
 }
 
--> file { '/data/web_static/current':
+file { '/data/web_static/current':
   ensure  => 'link',
   target  => '/data/web_static/releases/test',
   require => [File['/data/web_static/releases/test/index.html'], Exec['rm_current']],
 }
 
--> file { '/etc/nginx/sites-available/default':
+file { '/etc/nginx/sites-available/default':
     ensure  => file,
     content => "server {
 	add_header X-Served-By ${hostname};
