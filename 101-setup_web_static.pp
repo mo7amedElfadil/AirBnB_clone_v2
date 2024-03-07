@@ -3,8 +3,9 @@
 
 # update the package list
 exec { 'update':
-  command => 'apt-get update',
-  path    => '/usr/bin',
+  command     => '/usr/bin/apt-get update',
+  path        => '/usr/bin',
+  refreshonly => true,
 }
 
 # install and configure nginx server
@@ -40,10 +41,13 @@ file { '/data/web_static/releases/test/index.html':
   mode    => '0755',
 }
 
+
 file { '/data/web_static/current':
-  ensure  => 'link',
-  target  => '/data/web_static/releases/test',
-  require => File['/data/web_static/releases/test/index.html'],
+  ensure      => 'link',
+  target      => '/data/web_static/releases/test',
+  require     => File['/data/web_static/releases/test/index.html'],
+  subscribe   => File['/data/web_static/releases/test/index.html'],
+  refreshonly => true,
 }
 
 file { '/etc/nginx/sites-available/default':
@@ -71,7 +75,7 @@ file { '/etc/nginx/sites-available/default':
 	}
 
 }",
-    require => Package['nginx'],
+    require => [Package['nginx'], Exec['update']],
 }
 
 # restart the server
