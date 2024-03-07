@@ -59,7 +59,7 @@ def do_deploy(archive_path):
     return True
 
 
-@task(default=True)
+@task
 def deploy():
     """Creates and distributes an archive to the web servers"""
     archive_path = do_pack()
