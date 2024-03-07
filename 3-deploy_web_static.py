@@ -49,7 +49,7 @@ def do_deploy(archive_path):
 
         run("rm /tmp/{}".format(archive_path))
         run("rm -rf /data/web_static/current")
-        run("ln -s {}/{} /data/web_static/current".format(target, file))
+        run("ln -s {}{} /data/web_static/current".format(target, file))
 
         print("New version deployed!")
 
