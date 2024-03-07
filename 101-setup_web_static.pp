@@ -1,22 +1,21 @@
 # This is a manifest file for the web_static deployment
 # It will install nginx, create the necessary directories and files, and configure the server to serve the content
+$dir_names = ['/data', '/data/web_static', '/data/web_static/releases', '/data/web_static/shared', '/data/web_static/releases/test']
+
 exec {'update':
   command => '/usr/bin/apt-get update',
 }
 # install and configure nginx server
 -> package { 'nginx':
   ensure   => 'installed',
-  provider => 'apt',
 }
-# create the necessary directories
-$dir_names = ['/data', '/data/web_static', '/data/web_static/releases', '/data/web_static/shared', '/data/web_static/releases/test']
 
+# create the necessary directories
 -> file { $dir_names:
-  ensure  => 'directory',
-  owner   => 'ubuntu',
-  group   => 'ubuntu',
-  mode    => '0755',
-  require => Package['nginx'],
+  ensure => 'directory',
+  owner  => 'ubuntu',
+  group  => 'ubuntu',
+  mode   => '0755',
 }
 
 # create the necessary files
@@ -71,7 +70,7 @@ $dir_names = ['/data', '/data/web_static', '/data/web_static/releases', '/data/w
 }
 
 # restart the server
--> exec {'restart_nginx':
+exec {'restart_nginx':
     command   => '/usr/sbin/service nginx restart',
     subscribe => File['/etc/nginx/sites-available/default'],
 }
