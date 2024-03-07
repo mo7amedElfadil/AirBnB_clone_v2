@@ -14,15 +14,22 @@ env.user = "ubuntu"
 env.key_filename = "~/.ssh/id_rsa"
 
 
+def test(cmd):
+    """Tests the command and returns True if successful"""
+    if cmd.return_code == 0:
+        return False
+    return True
+
+
 @runs_once
 def do_pack():
     """Packs the web_static files into .tgz file"""
     date = datetime.now().strftime("%Y%m%d%H%M%S")
     file = "versions/web_static_{}.tgz".format(date)
     print("Packing web_static to {}".format(file))
-    local("mkdir -p versions")
-    result = local("tar -cvzf {} web_static".format(file), capture=True)
-    if result.return_code == 0:
+    if test(local("mkdir -p versions")):
+        return None
+    if not test(local("tar -cvzf {} web_static".format(file), capture=True)):
         print("web_static packed: {} -> {}Bytes".format(file, getsize(file)))
         return file
     return None
@@ -41,19 +48,27 @@ def do_deploy(archive_path):
             return False
 
         target = "/data/web_static/releases/"
-        put(archive_path, "/tmp/")
+        result = put(archive_path, "/tmp/")
         archive_path = basename(archive_path)
         file, _ = splitext(archive_path)
 
         with cd(target):
-            run("mkdir -p {}".format(file))
-            run("tar -xzf /tmp/{} -C {}".format(archive_path, file))
-            run("mv {}/web_static/* {} && rm -rf {}/web_static"
-                .format(file, file, file))
+            if test(run("mkdir -p {}".format(file))):
+                return False
+            if test(run("tar -xzf /tmp/{} -C {}"
+                        .format(archive_path, file))):
+                return False
+            if test(run("mv {}/web_static/* {} && rm -rf {}/web_static"
+                        .format(file, file, file))):
+                return False
 
-        run("rm /tmp/{}".format(archive_path))
-        run("rm -rf /data/web_static/current")
-        run("ln -s {}{}/ /data/web_static/current".format(target, file))
+        if test(run("rm /tmp/{}".format(archive_path))):
+            return False
+        if test(run("rm -rf /data/web_static/current")):
+            return False
+        if test(run("ln -s {}{}/ /data/web_static/current"
+                    .format(target, file))):
+            return False
 
         print("New version deployed!")
 
