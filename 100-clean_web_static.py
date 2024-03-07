@@ -62,7 +62,7 @@ def do_deploy(archive_path):
     return True
 
 
-@task(default=True)
+@task
 def deploy():
     """ Creates and distributes an archive to the web servers
         usage: fab -f 3-deploy_web_static.py deploy
@@ -74,3 +74,23 @@ def deploy():
         return do_deploy(archive_path)
     except Exception:
         return False
+
+
+@task
+def do_clean(number=0):
+    """ Deletes out-of-date archives
+        usage: fab -f 100-clean_web_static.py do_clean
+    """
+    try:
+        number = int(number)
+        if number < 0:
+            return False
+    except Exception:
+        return False
+
+    with cd("/data/web_static/releases"):
+        number = (number, 1)[number <= 1] + 1
+        run("ls -t web_static* | tail -n +{} | xargs rm -rf --".format(number))
+    local("ls -t versions/web_static* | tail -n +{} | xargs rm -rf --"
+          .format(number))
+    return True
