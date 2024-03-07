@@ -76,11 +76,20 @@ def deploy():
         return False
 
 
-@task
+@runs_once
+def do_clean_local(number):
+    """ Deletes local files
+    """
+    local("ls -t versions/web_static* | tail -n +{} | xargs rm -rf --"
+          .format(number))
+
+
+@task(default=True)
 def do_clean(number=0):
     """ Deletes out-of-date archives
         usage: fab -f 100-clean_web_static.py do_clean
     """
+    print("Cleaning local files")
     try:
         number = int(number)
         if number < 0:
@@ -88,9 +97,9 @@ def do_clean(number=0):
     except Exception:
         return False
 
-    with cd("/data/web_static/releases"):
-        number = (number, 1)[number <= 1] + 1
-        run("ls -t web_static* | tail -n +{} | xargs rm -rf --".format(number))
-    local("ls -t versions/web_static* | tail -n +{} | xargs rm -rf --"
-          .format(number))
+    number = (number, 1)[number <= 1] + 1
+    do_clean_local(number)
+    with cd("/data/web_static/releases/"):
+        run("ls -td web_static* | tail -n +{} | xargs rm -rf --"
+            .format(number))
     return True
