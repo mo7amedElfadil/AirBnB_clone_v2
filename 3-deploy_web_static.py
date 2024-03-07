@@ -10,6 +10,7 @@ from datetime import datetime
 from os.path import getsize
 
 env.hosts = ["54.144.238.161", "100.25.154.52"]
+# env.user = "ubuntu"
 
 
 @runs_once
@@ -65,7 +66,9 @@ def deploy():
     """ Creates and distributes an archive to the web servers
         usage: fab -f 3-deploy_web_static.py deploy
     """
-    archive_path = do_pack()
-    if archive_path:
-        return do_deploy(archive_path)
-    return False
+    try:
+        archive_path = do_pack()
+        if archive_path:
+            return do_deploy(archive_path)
+    except Exception:
+        return False
