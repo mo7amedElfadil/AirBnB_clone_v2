@@ -70,7 +70,8 @@ def deploy():
     """
     try:
         archive_path = do_pack()
-        if archive_path:
+        if archive_path is not None:
             return do_deploy(archive_path)
+        return False
     except Exception:
         return False
