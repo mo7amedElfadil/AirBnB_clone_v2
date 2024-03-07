@@ -20,7 +20,8 @@ def do_pack():
     file = "versions/web_static_{}.tgz".format(date)
     print("Packing web_static to {}".format(file))
     local("mkdir -p versions")
-    if local("tar -cvzf {} web_static".format(file)).succeeded:
+    result = local("tar -cvzf {} web_static".format(file), capture=True)
+    if result.return_code == 0:
         print("web_static packed: {} -> {}Bytes".format(file, getsize(file)))
         return file
     return None
