@@ -77,7 +77,7 @@ file { '/etc/nginx/sites-available/default':
 # restart the server
 exec {'run':
     command     => 'service nginx restart',
-    path        => '/usr/sbin',
+    path        => 'bin:/usr/bin:/usr/sbin',
     refreshonly => true,
     subscribe   => File['/etc/nginx/sites-available/default'],
   }
