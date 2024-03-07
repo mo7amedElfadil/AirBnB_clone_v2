@@ -1,14 +1,15 @@
 #!/usr/bin/python3
-"""Fabric script that creates and distributes
+"""
+Fabric script that creates and distributes
 an archive to my web servers,
-using the function deploy"""
+using the function deploy
+"""
 from os.path import basename, exists, splitext
 from fabric.api import local, env, run, put, runs_once, cd, task
 from datetime import datetime
 from os.path import getsize
 
 env.hosts = ["54.144.238.161", "100.25.154.52"]
-env.user = "ubuntu"
 
 
 @runs_once
@@ -59,9 +60,11 @@ def do_deploy(archive_path):
     return True
 
 
-@task
+@task(default=True)
 def deploy():
-    """Creates and distributes an archive to the web servers"""
+    """ Creates and distributes an archive to the web servers
+        usage: fab -f 3-deploy_web_static.py deploy
+    """
     archive_path = do_pack()
     if archive_path:
         return do_deploy(archive_path)
