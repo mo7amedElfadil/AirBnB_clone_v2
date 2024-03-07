@@ -4,7 +4,6 @@
 # update the package list
 exec { 'update':
   command     => '/usr/bin/apt-get update',
-  path        => '/usr/bin',
   refreshonly => true,
 }
 
@@ -40,14 +39,14 @@ file { '/data/web_static/releases/test/index.html':
   group   => 'ubuntu',
   mode    => '0755',
 }
-
+exec { 'rm_current':
+  command => '/usr/bin/rm -rf /data/web_static/current',
+}
 
 file { '/data/web_static/current':
-  ensure      => 'link',
-  target      => '/data/web_static/releases/test',
-  require     => File['/data/web_static/releases/test/index.html'],
-  subscribe   => File['/data/web_static/releases/test/index.html'],
-  refreshonly => true,
+  ensure  => 'link',
+  target  => '/data/web_static/releases/test',
+  require => [File['/data/web_static/releases/test/index.html'], Exec['rm_current']],
 }
 
 file { '/etc/nginx/sites-available/default':
