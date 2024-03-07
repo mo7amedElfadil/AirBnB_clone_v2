@@ -15,16 +15,16 @@ env.user = "ubuntu"
 def do_pack():
     """Packs the web_static files into .tgz file"""
     date = datetime.now().strftime("%Y%m%d%H%M%S")
-    file = f"versions/web_static_{date}.tgz"
-    print(f"Packing web_static to {file}")
+    file = "versions/web_static_{}.tgz".format(date)
+    print("Packing web_static to {}".format(file))
     local("mkdir -p versions")
-    if local(f"tar -cvzf {file} web_static").succeeded:
-        print(f"web_static packed: {file} -> {getsize(file)}Bytes")
+    if local("tar -cvzf {} web_static".format(file)).succeeded:
+        print("web_static packed: {} -> {}Bytes".format(file, getsize(file)))
         return file
     return None
 
 
-@task()
+@task
 def do_deploy(archive_path):
     """Deploys the archive to the web servers
     usage:
@@ -42,13 +42,14 @@ def do_deploy(archive_path):
         file, _ = splitext(archive_path)
 
         with cd(target):
-            run(f"mkdir -p {file}")
-            run(f"tar -xzf /tmp/{archive_path} -C {file}")
-            run(f"mv {file}/web_static/* {file} && rm -rf {file}/web_static")
+            run("mkdir -p {}".format(file))
+            run("tar -xzf /tmp/{} -C {}".format(archive_path, file))
+            run("mv {}/web_static/* {} && rm -rf {}/web_static"
+                    .format(file, file, file))
 
-        run(f"rm /tmp/{archive_path}")
+        run("rm /tmp/{}".format(archive_path))
         run("rm -rf /data/web_static/current")
-        run(f"ln -s {target}{file} /data/web_static/current")
+        run("ln -s {}/{} /data/web_static/current".format(target, file))
 
         print("New version deployed!")
 
