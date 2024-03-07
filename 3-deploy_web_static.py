@@ -10,7 +10,9 @@ from datetime import datetime
 from os.path import getsize
 
 env.hosts = ["54.144.238.161", "100.25.154.52"]
-# env.user = "ubuntu"
+env.colorize_errors = True
+env.abort_exception = None
+env.user = "ubuntu"
 
 
 @runs_once
