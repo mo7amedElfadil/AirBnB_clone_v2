@@ -3,7 +3,7 @@
 an archive to my web servers,
 using the function deploy"""
 from os.path import basename, exists, splitext
-from fabric.api import local, env, run, put, runs_once, cd
+from fabric.api import local, env, run, put, runs_once, cd, task
 from datetime import datetime
 from os.path import getsize
 
@@ -24,6 +24,7 @@ def do_pack():
     return None
 
 
+@task()
 def do_deploy(archive_path):
     """Deploys the archive to the web servers
     usage:
@@ -57,6 +58,7 @@ def do_deploy(archive_path):
     return True
 
 
+@task(default=True)
 def deploy():
     """Creates and distributes an archive to the web servers"""
     archive_path = do_pack()
