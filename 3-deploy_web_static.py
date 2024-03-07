@@ -16,8 +16,8 @@ def do_pack():
     """Packs the web_static files into .tgz file"""
     date = datetime.now().strftime("%Y%m%d%H%M%S")
     file = f"versions/web_static_{date}.tgz"
-    local("mkdir -p versions")
     print(f"Packing web_static to {file}")
+    local("mkdir -p versions")
     if local(f"tar -cvzf {file} web_static").succeeded:
         print(f"web_static packed: {file} -> {getsize(file)}Bytes")
         return file
