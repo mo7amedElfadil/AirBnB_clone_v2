@@ -7,6 +7,7 @@ AirBnB Clone repo
 from os.path import basename, exists, splitext
 from fabric.api import local, env, run, put, cd
 from datetime import datetime
+from os.path import getsize
 
 env.hosts = ["54.144.238.161", "100.25.154.52"]
 env.user = "ubuntu"
@@ -14,11 +15,12 @@ env.user = "ubuntu"
 
 def do_pack():
     """Packs the web_static files into .tgz file"""
-    local("mkdir -p versions")
     date = datetime.now().strftime("%Y%m%d%H%M%S")
     file = f"versions/web_static_{date}.tgz"
-    print("Packing web_static to {}".format(file))
+    print(f"Packing web_static to {file}")
+    local("mkdir -p versions")
     if local(f"tar -cvzf {file} web_static").succeeded:
+        print(f"web_static packed: {file} -> {getsize(file)}Bytes")
         return file
     return None
 

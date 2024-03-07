@@ -6,14 +6,16 @@ AirBnB Clone repo
 """
 from fabric.api import local
 from datetime import datetime
+from os.path import getsize
 
 
 def do_pack():
     """Packs the web_static files into .tgz file"""
-    local("mkdir -p versions")
     date = datetime.now().strftime("%Y%m%d%H%M%S")
     file = f"versions/web_static_{date}.tgz"
-    print("Packing web_static to {}".format(file))
+    print(f"Packing web_static to {file}")
+    local("mkdir -p versions")
     if local(f"tar -cvzf {file} web_static").succeeded:
+        print(f"web_static packed: {file} -> {getsize(file)}Bytes")
         return file
     return None
