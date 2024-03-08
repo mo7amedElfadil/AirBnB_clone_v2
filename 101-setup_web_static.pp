@@ -1,5 +1,7 @@
 # This is a manifest file for the web_static deployment
 # It will install nginx, create the necessary directories and files, and configure the server to serve the content
+# create the necessary directories
+$dir_names = ['/data', '/data/web_static', '/data/web_static/releases', '/data/web_static/shared', '/data/web_static/releases/test']
 
 # install and configure nginx server
 package { 'nginx':
@@ -7,8 +9,8 @@ package { 'nginx':
   provider => 'apt',
 }
 
-# create the necessary directories
-$dir_names = ['/data', '/data/web_static', '/data/web_static/releases', '/data/web_static/shared', '/data/web_static/releases/test']
+
+
 # create the necessary directories
 -> file { $dir_names:
   ensure  => 'directory',
