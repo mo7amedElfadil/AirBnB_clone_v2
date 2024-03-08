@@ -35,7 +35,7 @@ def do_pack():
     return None
 
 
-@task(default=True)
+@task
 def do_deploy(archive_path):
     """Deploys the archive to the web servers
     usage:
