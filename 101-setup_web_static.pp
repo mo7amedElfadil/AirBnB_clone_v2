@@ -9,43 +9,28 @@ package { 'nginx':
   ensure  => 'installed',
   require => Exec['update'],
 }
-file { '/data':
+-> file { '/data':
   ensure => 'directory',
-  owner  => 'ubuntu',
-  group  => 'ubuntu',
-  mode   => '0755',
 }
 
-file { '/data/web_static':
+-> file { '/data/web_static':
   ensure => 'directory',
-  owner  => 'ubuntu',
-  group  => 'ubuntu',
-  mode   => '0755',
 }
 
-file { '/data/web_static/releases':
+-> file { '/data/web_static/releases':
   ensure => 'directory',
-  owner  => 'ubuntu',
-  group  => 'ubuntu',
-  mode   => '0755',
 }
 
-file { '/data/web_static/releases/test':
+-> file { '/data/web_static/releases/test':
   ensure => 'directory',
-  owner  => 'ubuntu',
-  group  => 'ubuntu',
-  mode   => '0755',
 }
 
-file { '/data/web_static/shared':
+-> file { '/data/web_static/shared':
   ensure => 'directory',
-  owner  => 'ubuntu',
-  group  => 'ubuntu',
-  mode   => '0755',
 }
 
 # create the necessary files
-file { '/data/web_static/releases/test/index.html':
+-> file { '/data/web_static/releases/test/index.html':
   ensure  => 'file',
   content =>  "
 <!DOCTYPE html>
@@ -57,21 +42,18 @@ file { '/data/web_static/releases/test/index.html':
   </body>
 </html>	
 ",
-  owner   => 'ubuntu',
-  group   => 'ubuntu',
-  mode    => '0755',
 }
 exec { 'rm_current':
   command => '/usr/bin/rm -rf /data/web_static/current',
 }
 
-file { '/data/web_static/current':
+-> file { '/data/web_static/current':
   ensure  => 'link',
   target  => '/data/web_static/releases/test',
   require => [File['/data/web_static/releases/test/index.html'], Exec['rm_current']],
 }
 
-file { '/etc/nginx/sites-available/default':
+-> file { '/etc/nginx/sites-available/default':
     ensure  => file,
     content => "server {
 	add_header X-Served-By ${hostname};
@@ -99,7 +81,7 @@ file { '/etc/nginx/sites-available/default':
 }
 
 # restart the server
-exec {'restart_nginx':
+-> exec {'restart_nginx':
     command   => '/usr/sbin/service nginx restart',
     subscribe => File['/etc/nginx/sites-available/default'],
 }
