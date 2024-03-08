@@ -9,10 +9,35 @@ package { 'nginx':
   ensure  => 'installed',
   require => Exec['update'],
 }
+file { '/data':
+  ensure => 'directory',
+  owner  => 'ubuntu',
+  group  => 'ubuntu',
+  mode   => '0755',
+}
 
-$dir_names = ['/data', '/data/web_static', '/data/web_static/releases', '/data/web_static/shared', '/data/web_static/releases/test']
-# create the necessary directories
-file { $dir_names:
+file { '/data/web_static':
+  ensure => 'directory',
+  owner  => 'ubuntu',
+  group  => 'ubuntu',
+  mode   => '0755',
+}
+
+file { '/data/web_static/releases':
+  ensure => 'directory',
+  owner  => 'ubuntu',
+  group  => 'ubuntu',
+  mode   => '0755',
+}
+
+file { '/data/web_static/releases/test':
+  ensure => 'directory',
+  owner  => 'ubuntu',
+  group  => 'ubuntu',
+  mode   => '0755',
+}
+
+file { '/data/web_static/shared':
   ensure => 'directory',
   owner  => 'ubuntu',
   group  => 'ubuntu',
