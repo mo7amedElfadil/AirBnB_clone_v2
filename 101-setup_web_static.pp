@@ -1,52 +1,62 @@
-# This is a manifest file for the web_static deployment
-# It will install nginx, create the necessary directories and files, and configure the server to serve the content
+# 101-setup_web_static.pp
+# This Puppet manifest configures a web server for the deployment of web_static.
 
-# create the necessary directories
-$dir_names = ['/data', '/data/web_static', '/data/web_static/releases', '/data/web_static/shared', '/data/web_static/releases/test']
+# Define the Nginx configuration file
+$nginx_conf = "server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    add_header X-Served-By ${hostname};
+    root   /var/www/html;
+    index  index.html index.htm;
 
-# install and configure nginx server
+    location /hbnb_static {
+        alias /data/web_static/current;
+        index index.html index.htm;
+    }
+
+    error_page 404 /404.html;
+    location /404 {
+      root /var/www/html;
+      internal;
+    }
+}"
+
+# Ensure Nginx is installed
 package { 'nginx':
-  ensure   => 'installed',
+  ensure   => 'present',
   provider => 'apt',
 }
 
-# create the necessary directories
-file { $dir_names:
+# Ensure the required directories exist
+file { ['/data', '/data/web_static', '/data/web_static/releases', '/data/web_static/shared', '/data/web_static/releases/test']:
   ensure  => 'directory',
-  owner   => 'ubuntu',
-  group   => 'ubuntu',
-  mode    => '0755',
   require => Package['nginx'],
 }
 
-# create the necessary files
+# Create a fake HTML file
 file { '/data/web_static/releases/test/index.html':
   ensure  => 'present',
-  content =>  "
-<!DOCTYPE html>
-<html>
-  <head>
-  </head>
-  <body>
-	Holberton School
-  </body>
-</html>	
-",
+  content => "Holberton School Alx\n",
   require => File['/data/web_static/releases/test'],
 }
 
+# Create a symbolic link
 file { '/data/web_static/current':
   ensure  => 'link',
   target  => '/data/web_static/releases/test',
   require => File['/data/web_static/releases/test/index.html'],
 }
 
+# Change ownership of the /data/ directory
+exec { 'chown -R ubuntu:ubuntu /data/':
+  path    => '/usr/bin/:/usr/local/bin/:/bin/',
+  require => File['/data/web_static/current'],
+}
+
 # Ensure the /var/www/ and /var/www/html directories exist
 file { ['/var/www', '/var/www/html']:
-  ensure => 'directory',
-  owner  => 'ubuntu',
-  group  => 'ubuntu',
-  mode   => '0755',
+  ensure  => 'directory',
+  require => Exec['chown -R ubuntu:ubuntu /data/'],
 }
 
 # Create the index.html and 404.html files
@@ -54,51 +64,23 @@ file { '/var/www/html/index.html':
   ensure  => 'present',
   content => "Holberton School\n",
   require => File['/var/www/html'],
-  owner   => 'ubuntu',
-  group   => 'ubuntu',
-  mode    => '0755',
 }
 
 file { '/var/www/html/404.html':
   ensure  => 'present',
   content => "Ceci n'est pas une page\n",
   require => File['/var/www/html'],
-  owner   => 'ubuntu',
-  group   => 'ubuntu',
-  mode    => '0755',
 }
 
+# Update the Nginx configuration file
 file { '/etc/nginx/sites-available/default':
-  ensure  => file,
-  content => "server {
-	add_header X-Served-By ${hostname};
-	listen 80 default_server;
-	listen [::]:80 default_server;
-	root /var/www/html;
-	index index.html;
-	server_name _;
-	location / {
-		try_files \$uri \$uri/ =404;
-	}
-
-	location /hbnb_static/ {
-		alias /data/web_static/current/;
-	}
-	location /redirect_me {
-		return 301 https://www.youtube.com/watch?v=dQw4w9WgXcQ;
-	}
-	error_page 404 /404.html;
-	location = /404.html {
-		internal;
-	}
-}",
-  require => Package['nginx'],
-  notify  => Exec['nginx restart'],
+  ensure  => 'present',
+  content => $nginx_conf,
+  require => File['/var/www/html/404.html'],
 }
 
-# restart the server
-exec {'nginx restart':
-  refreshonly => true,
-  command     => '/usr/sbin/service nginx restart',
-  require     => File['/etc/nginx/sites-available/default'],
+# Restart Nginx
+exec { 'nginx restart':
+  path    => '/etc/init.d/',
+  require => File['/etc/nginx/sites-available/default'],
 }
