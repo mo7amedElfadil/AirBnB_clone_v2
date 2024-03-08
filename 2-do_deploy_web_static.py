@@ -13,12 +13,12 @@ env.hosts = ["54.144.238.161", "100.25.154.52"]
 env.user = "ubuntu"
 
 
-
 def test(cmd):
     """Tests the command and returns True if successful"""
     if cmd.return_code == 0:
         return False
     return True
+
 
 @runs_once
 def do_pack():
@@ -32,6 +32,7 @@ def do_pack():
         print("web_static packed: {} -> {}Bytes".format(file, getsize(file)))
         return file
     return None
+
 
 @task(default=True)
 def do_deploy(archive_path):
@@ -75,4 +76,3 @@ def do_deploy(archive_path):
         return False
 
     return True
-
