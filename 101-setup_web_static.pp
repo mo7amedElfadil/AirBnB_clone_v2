@@ -40,6 +40,7 @@ $dir_names = ['/data', '/data/web_static', '/data/web_static/releases', '/data/w
   require => File['/data/web_static/releases/test/index.html'],
 }
 
+
 -> file { '/etc/nginx/sites-available/default':
     ensure  => file,
     content => "server {
@@ -69,6 +70,6 @@ $dir_names = ['/data', '/data/web_static', '/data/web_static/releases', '/data/w
 
 # restart the server
 -> exec {'nginx restart':
-  command   => '/usr/sbin/service nginx restart',
-  subscribe => File['/etc/nginx/sites-available/default'],
+  command => '/usr/sbin/service nginx restart',
+  require => File['/etc/nginx/sites-available/default'],
 }
