@@ -5,12 +5,11 @@ from the contents of the web_static folder of
 AirBnB Clone repo
 """
 from os.path import basename, exists, splitext
-from fabric.api import local, env, run, put, cd, task, runs_once
+from fabric.api import local, env, run, put, cd, task
 from datetime import datetime
 from os.path import getsize
 
 env.hosts = ["54.144.238.161", "100.25.154.52"]
-env.user = "ubuntu"
 
 
 def test(cmd):
@@ -19,8 +18,7 @@ def test(cmd):
         return False
     return True
 
-
-@runs_once
+@task
 def do_pack():
     """Packs the web_static files into .tgz file"""
     date = datetime.now().strftime("%Y%m%d%H%M%S")
@@ -34,7 +32,7 @@ def do_pack():
     return None
 
 
-@task(default=True)
+@task
 def do_deploy(archive_path):
     """Deploys the archive to the web servers
     usage:
