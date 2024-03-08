@@ -51,6 +51,9 @@ def do_deploy(archive_path):
         archive_path = basename(archive_path)
         file, _ = splitext(archive_path)
         with cd(target):
+            if test(run("if [ -d {} ]; then rm -rf {}; fi"
+                        .format(file, file))):
+                return False
             if test(run("mkdir -p {}".format(file))):
                 return False
             if test(run("tar -xzf /tmp/{} -C {}"
