@@ -29,7 +29,7 @@ def do_pack():
     print("Packing web_static to {}".format(file))
     if test(local("mkdir -p versions")):
         return None
-    if not test(local("tar -cvzf {} web_static".format(file), capture=True)):
+    if not test(local("tar -cvzf {} web_static".format(file))):
         print("web_static packed: {} -> {}Bytes".format(file, getsize(file)))
         return file
     return None
