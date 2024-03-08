@@ -48,7 +48,8 @@ def do_deploy(archive_path):
             return False
 
         target = "/data/web_static/releases/"
-        result = put(archive_path, "/tmp/")
+        if test(put(archive_path, "/tmp/")):
+            return False
         archive_path = basename(archive_path)
         file, _ = splitext(archive_path)
 
