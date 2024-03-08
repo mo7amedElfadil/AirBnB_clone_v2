@@ -1,5 +1,6 @@
 # This is a manifest file for the web_static deployment
 # It will install nginx, create the necessary directories and files, and configure the server to serve the content
+
 # create the necessary directories
 $dir_names = ['/data', '/data/web_static', '/data/web_static/releases', '/data/web_static/shared', '/data/web_static/releases/test']
 
@@ -9,10 +10,8 @@ package { 'nginx':
   provider => 'apt',
 }
 
-
-
 # create the necessary directories
--> file { $dir_names:
+file { $dir_names:
   ensure  => 'directory',
   owner   => 'ubuntu',
   group   => 'ubuntu',
@@ -21,7 +20,7 @@ package { 'nginx':
 }
 
 # create the necessary files
--> file { '/data/web_static/releases/test/index.html':
+file { '/data/web_static/releases/test/index.html':
   ensure  => 'present',
   content =>  "
 <!DOCTYPE html>
@@ -36,16 +35,42 @@ package { 'nginx':
   require => File['/data/web_static/releases/test'],
 }
 
--> file { '/data/web_static/current':
+file { '/data/web_static/current':
   ensure  => 'link',
   target  => '/data/web_static/releases/test',
   require => File['/data/web_static/releases/test/index.html'],
 }
 
+# Ensure the /var/www/ and /var/www/html directories exist
+file { ['/var/www', '/var/www/html']:
+  ensure  => 'directory',
+  owner   => 'ubuntu',
+  group   => 'ubuntu',
+  mode    => '0755',
+}
 
--> file { '/etc/nginx/sites-available/default':
-    ensure  => file,
-    content => "server {
+# Create the index.html and 404.html files
+file { '/var/www/html/index.html':
+  ensure  => 'present',
+  content => "Holberton School\n",
+  require => File['/var/www/html'],
+  owner   => 'ubuntu',
+  group   => 'ubuntu',
+  mode    => '0755',
+}
+
+file { '/var/www/html/404.html':
+  ensure  => 'present',
+  content => "Ceci n'est pas une page\n",
+  require => File['/var/www/html'],
+  owner   => 'ubuntu',
+  group   => 'ubuntu',
+  mode    => '0755',
+}
+
+file { '/etc/nginx/sites-available/default':
+  ensure  => file,
+  content => "server {
 	add_header X-Served-By ${hostname};
 	listen 80 default_server;
 	listen [::]:80 default_server;
@@ -67,11 +92,13 @@ package { 'nginx':
 		internal;
 	}
 }",
-    require => Package['nginx'],
+  require => Package['nginx'],
+  notify  => Exec['restart_nginx'],
 }
 
 # restart the server
--> exec {'nginx restart':
-  command => '/usr/sbin/service nginx restart',
-  require => File['/etc/nginx/sites-available/default'],
+exec {'nginx restart':
+  refreshonly => true,
+  command     => '/usr/sbin/service nginx restart',
+  require     => File['/etc/nginx/sites-available/default'],
 }
