@@ -15,7 +15,7 @@ env.user = "ubuntu"
 
 def test(cmd):
     """Tests the command and returns True if successful"""
-    if cmd.return_code == 0:
+    if cmd.succeeded is True:
         return False
     return True
 
@@ -47,6 +47,7 @@ def do_deploy(archive_path):
             return False
 
         target = "/data/web_static/releases/"
+
         if test(put(archive_path, "/tmp/")):
             return False
         archive_path = basename(archive_path)

@@ -16,7 +16,7 @@ env.key_filename = "~/.ssh/id_rsa"
 
 def test(cmd):
     """Tests the command and returns True if successful"""
-    if cmd.return_code == 0:
+    if cmd.succeeded is True:
         return False
     return True
 
