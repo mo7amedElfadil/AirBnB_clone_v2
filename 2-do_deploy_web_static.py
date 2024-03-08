@@ -10,6 +10,7 @@ from datetime import datetime
 from os.path import getsize
 
 env.hosts = ["54.144.238.161", "100.25.154.52"]
+env.user = "ubuntu"
 
 
 def test(cmd):
@@ -17,6 +18,7 @@ def test(cmd):
     if cmd.succeeded is True:
         return False
     return True
+
 
 @task
 def do_pack():
@@ -32,7 +34,7 @@ def do_pack():
     return None
 
 
-@task
+@task(default=True)
 def do_deploy(archive_path):
     """Deploys the archive to the web servers
     usage:
@@ -43,14 +45,11 @@ def do_deploy(archive_path):
     try:
         if not exists(archive_path):
             return False
-
         target = "/data/web_static/releases/"
-
         if test(put(archive_path, "/tmp/")):
             return False
         archive_path = basename(archive_path)
         file, _ = splitext(archive_path)
-
         with cd(target):
             if test(run("mkdir -p {}".format(file))):
                 return False
@@ -60,7 +59,6 @@ def do_deploy(archive_path):
             if test(run("mv {}/web_static/* {} && rm -rf {}/web_static"
                         .format(file, file, file))):
                 return False
-
         if test(run("rm /tmp/{}".format(archive_path))):
             return False
         if test(run("rm -rf /data/web_static/current")):
@@ -68,10 +66,7 @@ def do_deploy(archive_path):
         if test(run("ln -s {}{}/ /data/web_static/current"
                     .format(target, file))):
             return False
-
         print("New version deployed!")
-
     except Exception:
         return False
-
     return True
