@@ -81,10 +81,7 @@ def deploy():
     """ Creates and distributes an archive to the web servers
         usage: fab -f 3-deploy_web_static.py deploy
     """
-    try:
-        archive_path = do_pack()
-        if archive_path is None:
-            return False
-        return do_deploy(archive_path)
-    except Exception:
+    archive_path = do_pack()
+    if archive_path is None:
         return False
+    return do_deploy(archive_path)
