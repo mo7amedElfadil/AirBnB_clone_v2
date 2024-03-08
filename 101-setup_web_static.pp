@@ -43,10 +43,10 @@ file { '/data/web_static/current':
 
 # Ensure the /var/www/ and /var/www/html directories exist
 file { ['/var/www', '/var/www/html']:
-  ensure  => 'directory',
-  owner   => 'ubuntu',
-  group   => 'ubuntu',
-  mode    => '0755',
+  ensure => 'directory',
+  owner  => 'ubuntu',
+  group  => 'ubuntu',
+  mode   => '0755',
 }
 
 # Create the index.html and 404.html files
@@ -93,7 +93,7 @@ file { '/etc/nginx/sites-available/default':
 	}
 }",
   require => Package['nginx'],
-  notify  => Exec['restart_nginx'],
+  notify  => Exec['nginx restart'],
 }
 
 # restart the server
