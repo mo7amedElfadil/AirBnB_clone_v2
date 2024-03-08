@@ -60,11 +60,11 @@ def do_deploy(archive_path):
             if test(run("tar -xzf /tmp/{} -C {}"
                         .format(archive_path, file))):
                 return False
+            if test(run("rm /tmp/{}".format(archive_path))):
+                return False
             if test(run("mv {}/web_static/* {} && rm -rf {}/web_static"
                         .format(file, file, file))):
                 return False
-        if test(run("rm /tmp/{}".format(archive_path))):
-            return False
         if test(run("rm -rf /data/web_static/current")):
             return False
         if test(run("ln -s {}{}/ /data/web_static/current"
