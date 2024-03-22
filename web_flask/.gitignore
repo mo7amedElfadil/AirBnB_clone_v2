@@ -5,3 +5,6 @@
 !/LICENSE
 *main.py
 __pycache__
+!/templates
+!/*.html
+!/templates/*
