@@ -8,6 +8,7 @@ from models import storage
 from models.state import State
 app = Flask(__name__)
 
+
 def get_storage():
     """
     Get storage instance
@@ -15,6 +16,7 @@ def get_storage():
     if not hasattr(g, 'storage'):
         g.storage = storage
     return g.storage
+
 
 @app.teardown_appcontext
 def close_storage(exception):
@@ -25,6 +27,7 @@ def close_storage(exception):
     if store is not None:
         store.close()
 
+
 @app.route('/states_list', strict_slashes=False)
 def states_list():
     """
@@ -33,20 +36,6 @@ def states_list():
     store = get_storage()
     states = store.all(State)
     return render_template('7-states_list.html', states=states)
-
-
-# @app.route('/', strict_slashes=False)
-# def hello_hbnb():
-#     """
-#     Hello HBNB!
-#     """
-#     return 'Hello HBNB!'
-# @app.route('/hbnb', strict_slashes=False)
-# def hbnb():
-#     """
-#     HBNB
-#     """
-#     return 'HBNB'
 
 
 if __name__ == "__main__":
