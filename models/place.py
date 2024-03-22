@@ -74,5 +74,3 @@ class Place(BaseModel, Base):
         """amenities setter attribute"""
         if isinstance(value, Amenity):
             self.amenity_ids.append(value.id)
-        else:
-            pass
