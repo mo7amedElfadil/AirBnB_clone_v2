@@ -11,3 +11,4 @@ venv/
 7-dump.sql
 requirements.txt
 test_paarams_create
+10-dump.sql

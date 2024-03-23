@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <title>AirBnB</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Static web page that's a copy of AirBnB website">
+    <meta name="author" content="Mohamed Elfadil">
+    <link rel="icon" href="static/images/icon.png">
+    <link href="static/styles/4-common.css" rel="stylesheet">
+    <link href="static/styles/3-header.css" rel="stylesheet">
+    <link href="static/styles/3-footer.css" rel="stylesheet">
+    <link href="static/styles/6-filters.css" rel="stylesheet">
+  </head>
+
+  <body>
+    <header></header>
+    <div class="container">
+      <section class="filters">
+        <div class="locations">
+          <h3>States</h3>
+          <h4>&nbsp;</h4>
+          <ul class="popover">
+            {% for state in states.values()|sort(attribute="name") %}
+            <h2>{{ state.name }}</h2>
+            <ul>
+              {% for city in state.cities|sort(attribute="name") %}
+              <li>{{ city.name }}</li>
+              {% endfor %}
+              </ul>
+                {% endfor %}
+              </ul>
+        </div>
+        <div class="amenities">
+          <h3>Amenities</h3>
+          <h4>&nbsp;</h4>
+          <ul class="popover">
+            {% for amenity in amenities.values()|sort(attribute="name") %}
+            <li>{{ amenity.name }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        <button type="button">Search</button>
+      </section>
+    </div>
+    <footer>
+      <span>best school</span>
+    </footer>
+  </body>
+</html>
