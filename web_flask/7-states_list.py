@@ -22,8 +22,7 @@ def states_list():
     """
     List all states
     """
-    store = get_storage()
-    states = store.all(State)
+    states = storage.all(State)
     return render_template('7-states_list.html', states=states)
 
 
