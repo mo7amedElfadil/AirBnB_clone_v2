@@ -9,6 +9,14 @@ from models.state import State
 app = Flask(__name__)
 
 
+def get_states():
+    """
+    Get states
+    """
+    storage.reload()
+    return storage.all(State).values()
+
+
 @app.teardown_appcontext
 def close_storage(_=None):
     """
@@ -22,7 +30,7 @@ def states_list():
     """
     List all states
     """
-    states = storage.all(State)
+    states = get_states()
     return render_template('7-states_list.html', states=states)
 
 
