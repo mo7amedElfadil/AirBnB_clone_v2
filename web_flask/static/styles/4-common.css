@@ -1,0 +1,25 @@
+/*------------ GLOBAL STYLE -----------------*/
+*, *::before, *::after {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	color: #484848;
+	list-style: none;
+}
+
+html, body {
+	min-height: 100%;
+}
+
+body {
+	display: flex;
+	flex-direction: column;
+ 	font-family: Circular,"Helvetica Neue",Helvetica,Arial,sans-serif;
+	font-size: 14px;
+}
+
+.container {
+	width: 90%;
+	max-width: 1000px;
+	margin: 30px auto;
+}

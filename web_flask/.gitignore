@@ -8,3 +8,9 @@ __pycache__
 !/templates
 !/*.html
 !/templates/*
+!/static
+!/static
+!/static/images
+!/static/styles
+!/static/styles/*
+!/static/images/*
