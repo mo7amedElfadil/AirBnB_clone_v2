@@ -67,6 +67,7 @@ def hbnb_filters():
     return render_template('10-hbnb_filters.html', states=states,
                            amenities=amenities)
 
+
 @app.route('/hbnb', strict_slashes=False)
 def hbnb():
     """
@@ -78,6 +79,7 @@ def hbnb():
     places = storage.all(Place)
     return render_template('100-hbnb.html', states=states,
                            amenities=amenities, places=places)
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000)
